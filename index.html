@@ -1,365 +1,420 @@
-import React, { useState, useEffect } from 'react';
-import { Phone, Wrench, Truck, Clock, MapPin, AlertTriangle, Hammer, ChevronRight, Menu, X, Droplet, Cog, Shield } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HWS | Emergency Ag Repair</title>
+    
+    <!-- 1. Load Tailwind CSS (Styling) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. Load React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- 3. Load Babel (To translate React code in the browser) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-const App = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    <style>
+        /* Custom Scrollbar for that rugged feel */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #eab308; }
+        ::-webkit-scrollbar-thumb:hover { background: #ca8a04; }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+    
+    <!-- This is where the React App will load -->
+    <div id="root"></div>
 
-  // Handle scroll for sticky nav effects
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    <!-- YOUR REACT CODE GOES HERE -->
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-  // Business Data
-  const phoneDisplay = "0400 287 706";
-  const phoneHref = "tel:+61400287706";
-  const address = "4 Thompsons Ave, Moree NSW 2400";
+        // --- ICONS (Inline SVGs since we aren't using npm) ---
+        const Icon = ({ children, className, size = 24 }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                {children}
+            </svg>
+        );
 
-  return (
-    <div className="font-sans text-slate-900 bg-slate-50 antialiased selection:bg-yellow-400 selection:text-black pb-20 md:pb-0">
-      
-      {/* TOP BAR - Desktop Only */}
-      <div className="hidden md:flex justify-between items-center bg-slate-900 text-slate-300 px-6 py-2 text-sm font-medium border-b border-slate-800">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-2"><MapPin size={14} className="text-yellow-500" /> Moree, NSW</span>
-          <span className="flex items-center gap-2"><Clock size={14} className="text-yellow-500" /> Shop Opens 7 AM</span>
-        </div>
-        <div className="text-yellow-500 font-bold uppercase tracking-wider text-xs flex items-center gap-2 animate-pulse">
-          <AlertTriangle size={14} /> Harvest Emergency Priority
-        </div>
-      </div>
+        const Phone = (props) => <Icon {...props}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></Icon>;
+        const Wrench = (props) => <Icon {...props}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></Icon>;
+        const Truck = (props) => <Icon {...props}><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></Icon>;
+        const Clock = (props) => <Icon {...props}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></Icon>;
+        const MapPin = (props) => <Icon {...props}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></Icon>;
+        const AlertTriangle = (props) => <Icon {...props}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></Icon>;
+        const Hammer = (props) => <Icon {...props}><path d="M13.5 14.5l-1.6 2.4a2 2 0 0 0 .4 2.7l2.5 1.8a2 2 0 0 0 2.7-.4l1.6-2.4"></path><path d="M18.4 18.4l2.5 1.8a2 2 0 0 0 2.7-.4l1.6-2.4"></path><path d="M21.8 12.4l-4-4"></path><path d="M2.7 7.3L7 3"></path><path d="M10.2 10.2L3.4 17"></path></Icon>;
+        const ChevronRight = (props) => <Icon {...props}><polyline points="9 18 15 12 9 6"></polyline></Icon>;
+        const Menu = (props) => <Icon {...props}><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></Icon>;
+        const X = (props) => <Icon {...props}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></Icon>;
+        const Droplet = (props) => <Icon {...props}><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></Icon>;
+        const Cog = (props) => <Icon {...props}><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></Icon>;
+        const Shield = (props) => <Icon {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></Icon>;
 
-      {/* NAVIGATION */}
-      <nav className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-xl border-b border-slate-200' : 'bg-slate-900 border-b border-slate-800'}`}>
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo Area */}
-            <div className="flex flex-col justify-center">
-              <h1 className={`text-2xl font-black tracking-tighter uppercase ${isScrolled ? 'text-slate-900' : 'text-white'}`}>
-                HWS <span className="text-yellow-500">|</span> Heavy Welding
-              </h1>
-              <span className={`text-xs font-bold tracking-widest uppercase ${isScrolled ? 'text-slate-500' : 'text-slate-400'}`}>
-                Specialists Moree
-              </span>
-            </div>
+        // --- MAIN APP COMPONENT ---
+        const App = () => {
+            const [isScrolled, setIsScrolled] = useState(false);
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-            {/* Desktop CTA */}
-            <div className="hidden md:flex items-center gap-6">
-              <a href="#capabilities" className={`font-bold hover:text-yellow-500 transition ${isScrolled ? 'text-slate-700' : 'text-white'}`}>Capabilities</a>
-              <a href="#location" className={`font-bold hover:text-yellow-500 transition ${isScrolled ? 'text-slate-700' : 'text-white'}`}>Location</a>
-              <a href={phoneHref} className="bg-yellow-500 hover:bg-yellow-400 text-black font-black py-3 px-6 rounded uppercase flex items-center gap-2 shadow-lg hover:shadow-yellow-500/50 transition-all transform hover:-translate-y-1">
-                <Phone size={20} />
-                {phoneDisplay}
-              </a>
-            </div>
+            useEffect(() => {
+                const handleScroll = () => {
+                    setIsScrolled(window.scrollY > 50);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
 
-            {/* Mobile Menu Toggle */}
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-yellow-500">
-              {mobileMenuOpen ? <X size={32} /> : <Menu size={32} />}
-            </button>
-          </div>
-        </div>
+            const phoneDisplay = "0400 287 706";
+            const phoneHref = "tel:+61400287706";
+            const address = "4 Thompsons Ave, Moree NSW 2400";
 
-        {/* Mobile Menu Dropdown */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-slate-900 text-white absolute w-full border-b-4 border-yellow-500 shadow-2xl z-50">
-            <div className="flex flex-col p-6 gap-4 text-xl font-bold">
-              <a href="#capabilities" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-slate-800">Services</a>
-              <a href="#location" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-slate-800">Find Shop</a>
-              <a href={phoneHref} className="text-yellow-500 py-2 flex items-center gap-2">
-                <Phone size={20} /> Call Now
-              </a>
-            </div>
-          </div>
-        )}
-      </nav>
-
-      {/* HERO SECTION - "The Harvest Saver" */}
-      <header className="relative bg-slate-900 overflow-hidden">
-        {/* Gritty Background Image with Overlay */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" 
-            alt="Welder working on heavy machinery" 
-            className="w-full h-full object-cover opacity-40"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-900/40"></div>
-        </div>
-
-        <div className="relative z-10 container mx-auto px-4 md:px-6 py-20 md:py-32 lg:py-40">
-          <div className="max-w-3xl">
-            <div className="inline-block bg-yellow-500 text-black font-black px-3 py-1 text-sm mb-6 uppercase tracking-wide skew-x-[-10deg]">
-              <span className="block skew-x-[10deg]">Harvest Season Priority Service</span>
-            </div>
-            
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-6 drop-shadow-xl">
-              EMERGENCY AG REPAIR & MOBILE WELDING IN <span className="text-yellow-500 underline decoration-4 underline-offset-4 decoration-white/20">MOREE</span>
-            </h1>
-            
-            <h2 className="text-lg md:text-2xl text-slate-300 font-medium mb-10 leading-relaxed border-l-4 border-yellow-500 pl-6 bg-slate-900/50 py-2 rounded-r">
-              <span className="text-white font-bold">Hydraulic Cylinders. PTO Shafts. Auger Flighting.</span><br/>
-              Don't let a broken part stop your harvest. We offer fast turnaround and mobile field service for critical equipment failures.
-            </h2>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a href={phoneHref} className="bg-yellow-500 hover:bg-yellow-400 text-black text-xl md:text-2xl font-black py-5 px-8 rounded flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(234,179,8,0.3)] transition-all hover:scale-105 ring-4 ring-yellow-500/30">
-                <Phone fill="black" size={28} />
-                CLICK TO CALL: {phoneDisplay}
-              </a>
-            </div>
-            <p className="mt-4 text-slate-400 text-sm font-medium flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Available for Harvest Emergencies
-            </p>
-          </div>
-        </div>
-      </header>
-
-      {/* TRUST TRIGGERS - "The Answer to Fears" */}
-      <section className="relative z-20 -mt-8 md:-mt-16 px-4 container mx-auto mb-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          
-          {/* Card 1 */}
-          <div className="bg-white border-b-4 border-yellow-500 p-8 shadow-xl flex flex-col items-start hover:transform hover:-translate-y-1 transition-transform duration-300">
-            <div className="bg-slate-900 p-3 rounded mb-4 text-white">
-              <Truck size={32} />
-            </div>
-            <h3 className="text-xl font-black uppercase mb-2 text-slate-900">We Come to You</h3>
-            <p className="text-slate-600 font-medium">Fully equipped mobile welding rigs ready for field repairs. We bring the workshop to the paddock.</p>
-          </div>
-
-          {/* Card 2 */}
-          <div className="bg-white border-b-4 border-slate-900 p-8 shadow-xl flex flex-col items-start hover:transform hover:-translate-y-1 transition-transform duration-300">
-             <div className="bg-yellow-500 p-3 rounded mb-4 text-black">
-              <Hammer size={32} />
-            </div>
-            <h3 className="text-xl font-black uppercase mb-2 text-slate-900">Full Machine Shop</h3>
-            <p className="text-slate-600 font-medium">Lathes and mills capable of remanufacturing obsolete parts. Located at 4 Thompsons Ave.</p>
-          </div>
-
-          {/* Card 3 */}
-          <div className="bg-white border-b-4 border-yellow-500 p-8 shadow-xl flex flex-col items-start hover:transform hover:-translate-y-1 transition-transform duration-300">
-             <div className="bg-slate-900 p-3 rounded mb-4 text-white">
-              <Wrench size={32} />
-            </div>
-            <h3 className="text-xl font-black uppercase mb-2 text-slate-900">Fabrication & Mod</h3>
-            <p className="text-slate-600 font-medium">From irrigation development to grain site tube conveyors. We build it to last.</p>
-          </div>
-
-        </div>
-      </section>
-
-      {/* CAPABILITIES CHECKLIST - SEO STRATEGY (REVISED) */}
-      <section id="capabilities" className="py-20 bg-slate-100">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center p-2 bg-slate-200 rounded-full mb-4">
-               <span className="bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Expertise</span>
-               <span className="text-slate-700 text-sm font-bold px-3">Full Service List</span>
-            </div>
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 uppercase mb-4">Capabilities Checklist</h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">You break it. We fix it. Identifying the specific parts we repair daily.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-8">
-            
-            {/* Column 1: Emergency & Drivetrain (SEO Heavy) */}
-            <div className="bg-white rounded-xl shadow-sm border-2 border-slate-200 overflow-hidden hover:border-yellow-500 transition-colors duration-300">
-              <div className="bg-slate-900 p-6 flex items-center gap-4">
-                <div className="bg-yellow-500 p-2 rounded text-slate-900">
-                    <Cog size={28} />
+            return (
+                <div className="font-sans text-slate-900 bg-slate-50 antialiased selection:bg-yellow-400 selection:text-black pb-20 md:pb-0">
+                
+                {/* TOP BAR - Desktop Only */}
+                <div className="hidden md:flex justify-between items-center bg-slate-900 text-slate-300 px-6 py-2 text-sm font-medium border-b border-slate-800">
+                    <div className="flex items-center gap-4">
+                    <span className="flex items-center gap-2"><MapPin size={14} className="text-yellow-500" /> Moree, NSW</span>
+                    <span className="flex items-center gap-2"><Clock size={14} className="text-yellow-500" /> Shop Opens 7 AM</span>
+                    </div>
+                    <div className="text-yellow-500 font-bold uppercase tracking-wider text-xs flex items-center gap-2 animate-pulse">
+                    <AlertTriangle size={14} /> Harvest Emergency Priority
+                    </div>
                 </div>
-                <div>
-                    <h3 className="text-xl font-bold uppercase text-white">Hydraulics & Drivetrain</h3>
-                    <p className="text-slate-400 text-xs uppercase tracking-wider">Critical Failure Points</p>
+
+                {/* NAVIGATION */}
+                <nav className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-xl border-b border-slate-200' : 'bg-slate-900 border-b border-slate-800'}`}>
+                    <div className="container mx-auto px-4 md:px-6">
+                    <div className="flex justify-between items-center h-20">
+                        {/* Logo Area */}
+                        <div className="flex flex-col justify-center">
+                        <h1 className={`text-2xl font-black tracking-tighter uppercase ${isScrolled ? 'text-slate-900' : 'text-white'}`}>
+                            HWS <span className="text-yellow-500">|</span> Heavy Welding
+                        </h1>
+                        <span className={`text-xs font-bold tracking-widest uppercase ${isScrolled ? 'text-slate-500' : 'text-slate-400'}`}>
+                            Specialists Moree
+                        </span>
+                        </div>
+
+                        {/* Desktop CTA */}
+                        <div className="hidden md:flex items-center gap-6">
+                        <a href="#capabilities" className={`font-bold hover:text-yellow-500 transition ${isScrolled ? 'text-slate-700' : 'text-white'}`}>Capabilities</a>
+                        <a href="#location" className={`font-bold hover:text-yellow-500 transition ${isScrolled ? 'text-slate-700' : 'text-white'}`}>Location</a>
+                        <a href={phoneHref} className="bg-yellow-500 hover:bg-yellow-400 text-black font-black py-3 px-6 rounded uppercase flex items-center gap-2 shadow-lg hover:shadow-yellow-500/50 transition-all transform hover:-translate-y-1">
+                            <Phone size={20} />
+                            {phoneDisplay}
+                        </a>
+                        </div>
+
+                        {/* Mobile Menu Toggle */}
+                        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-yellow-500">
+                        {mobileMenuOpen ? <X size={32} /> : <Menu size={32} />}
+                        </button>
+                    </div>
+                    </div>
+
+                    {/* Mobile Menu Dropdown */}
+                    {mobileMenuOpen && (
+                    <div className="md:hidden bg-slate-900 text-white absolute w-full border-b-4 border-yellow-500 shadow-2xl z-50">
+                        <div className="flex flex-col p-6 gap-4 text-xl font-bold">
+                        <a href="#capabilities" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-slate-800">Services</a>
+                        <a href="#location" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-slate-800">Find Shop</a>
+                        <a href={phoneHref} className="text-yellow-500 py-2 flex items-center gap-2">
+                            <Phone size={20} /> Call Now
+                        </a>
+                        </div>
+                    </div>
+                    )}
+                </nav>
+
+                {/* HERO SECTION */}
+                <header className="relative bg-slate-900 overflow-hidden">
+                    <div className="absolute inset-0 z-0">
+                    <img 
+                        src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" 
+                        alt="Welder working on heavy machinery" 
+                        className="w-full h-full object-cover opacity-40"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-900/40"></div>
+                    </div>
+
+                    <div className="relative z-10 container mx-auto px-4 md:px-6 py-20 md:py-32 lg:py-40">
+                    <div className="max-w-3xl">
+                        <div className="inline-block bg-yellow-500 text-black font-black px-3 py-1 text-sm mb-6 uppercase tracking-wide skew-x-[-10deg]">
+                        <span className="block skew-x-[10deg]">Harvest Season Priority Service</span>
+                        </div>
+                        
+                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-6 drop-shadow-xl">
+                        EMERGENCY AG REPAIR & MOBILE WELDING IN <span className="text-yellow-500 underline decoration-4 underline-offset-4 decoration-white/20">MOREE</span>
+                        </h1>
+                        
+                        <h2 className="text-lg md:text-2xl text-slate-300 font-medium mb-10 leading-relaxed border-l-4 border-yellow-500 pl-6 bg-slate-900/50 py-2 rounded-r">
+                        <span className="text-white font-bold">Hydraulic Cylinders. PTO Shafts. Auger Flighting.</span><br/>
+                        Don't let a broken part stop your harvest. We offer fast turnaround and mobile field service for critical equipment failures.
+                        </h2>
+
+                        <div className="flex flex-col sm:flex-row gap-4">
+                        <a href={phoneHref} className="bg-yellow-500 hover:bg-yellow-400 text-black text-xl md:text-2xl font-black py-5 px-8 rounded flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(234,179,8,0.3)] transition-all hover:scale-105 ring-4 ring-yellow-500/30">
+                            <Phone fill="black" size={28} />
+                            CLICK TO CALL: {phoneDisplay}
+                        </a>
+                        </div>
+                        <p className="mt-4 text-slate-400 text-sm font-medium flex items-center gap-2">
+                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        Available for Harvest Emergencies
+                        </p>
+                    </div>
+                    </div>
+                </header>
+
+                {/* TRUST TRIGGERS */}
+                <section className="relative z-20 -mt-8 md:-mt-16 px-4 container mx-auto mb-16">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    
+                    {/* Card 1 */}
+                    <div className="bg-white border-b-4 border-yellow-500 p-8 shadow-xl flex flex-col items-start hover:transform hover:-translate-y-1 transition-transform duration-300">
+                        <div className="bg-slate-900 p-3 rounded mb-4 text-white">
+                        <Truck size={32} />
+                        </div>
+                        <h3 className="text-xl font-black uppercase mb-2 text-slate-900">We Come to You</h3>
+                        <p className="text-slate-600 font-medium">Fully equipped mobile welding rigs ready for field repairs. We bring the workshop to the paddock.</p>
+                    </div>
+
+                    {/* Card 2 */}
+                    <div className="bg-white border-b-4 border-slate-900 p-8 shadow-xl flex flex-col items-start hover:transform hover:-translate-y-1 transition-transform duration-300">
+                        <div className="bg-yellow-500 p-3 rounded mb-4 text-black">
+                        <Hammer size={32} />
+                        </div>
+                        <h3 className="text-xl font-black uppercase mb-2 text-slate-900">Full Machine Shop</h3>
+                        <p className="text-slate-600 font-medium">Lathes and mills capable of remanufacturing obsolete parts. Located at 4 Thompsons Ave.</p>
+                    </div>
+
+                    {/* Card 3 */}
+                    <div className="bg-white border-b-4 border-yellow-500 p-8 shadow-xl flex flex-col items-start hover:transform hover:-translate-y-1 transition-transform duration-300">
+                        <div className="bg-slate-900 p-3 rounded mb-4 text-white">
+                        <Wrench size={32} />
+                        </div>
+                        <h3 className="text-xl font-black uppercase mb-2 text-slate-900">Fabrication & Mod</h3>
+                        <p className="text-slate-600 font-medium">From irrigation development to grain site tube conveyors. We build it to last.</p>
+                    </div>
+
+                    </div>
+                </section>
+
+                {/* CAPABILITIES CHECKLIST */}
+                <section id="capabilities" className="py-20 bg-slate-100">
+                    <div className="container mx-auto px-4 md:px-6">
+                    <div className="text-center mb-16">
+                        <div className="inline-flex items-center justify-center p-2 bg-slate-200 rounded-full mb-4">
+                        <span className="bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Expertise</span>
+                        <span className="text-slate-700 text-sm font-bold px-3">Full Service List</span>
+                        </div>
+                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 uppercase mb-4">Capabilities Checklist</h2>
+                        <p className="text-xl text-slate-600 max-w-2xl mx-auto">You break it. We fix it. Identifying the specific parts we repair daily.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-8">
+                        
+                        {/* Column 1 */}
+                        <div className="bg-white rounded-xl shadow-sm border-2 border-slate-200 overflow-hidden hover:border-yellow-500 transition-colors duration-300">
+                        <div className="bg-slate-900 p-6 flex items-center gap-4">
+                            <div className="bg-yellow-500 p-2 rounded text-slate-900">
+                                <Cog size={28} />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold uppercase text-white">Hydraulics & Drivetrain</h3>
+                                <p className="text-slate-400 text-xs uppercase tracking-wider">Critical Failure Points</p>
+                            </div>
+                        </div>
+                        <div className="p-8">
+                            <ul className="space-y-4">
+                                <li className="flex items-start gap-3">
+                                <AlertTriangle className="text-yellow-600 shrink-0 mt-1" size={20} />
+                                <span className="font-bold text-lg text-slate-900">Hydraulic Cylinder Resealing</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
+                                <span className="font-medium text-lg text-slate-700">PTO Shaft Balancing</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
+                                <span className="font-medium text-lg text-slate-700">U-Joint Replacement</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
+                                <span className="font-medium text-lg text-slate-700">Axle Repair</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
+                                <span className="font-medium text-lg text-slate-700">Hydraulic Hoses & Fittings</span>
+                                </li>
+                            </ul>
+                        </div>
+                        </div>
+
+                        {/* Column 2 */}
+                        <div className="bg-white rounded-xl shadow-sm border-2 border-slate-200 overflow-hidden hover:border-yellow-500 transition-colors duration-300">
+                        <div className="bg-slate-900 p-6 flex items-center gap-4">
+                            <div className="bg-yellow-500 p-2 rounded text-slate-900">
+                                <Droplet size={28} />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold uppercase text-white">Ag Infrastructure</h3>
+                                <p className="text-slate-400 text-xs uppercase tracking-wider">Site Development</p>
+                            </div>
+                        </div>
+                        <div className="p-8">
+                            <ul className="space-y-4">
+                                <li className="flex items-start gap-3">
+                                <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
+                                <span className="font-medium text-lg text-slate-700">Irrigation Development & Repairs</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
+                                <span className="font-medium text-lg text-slate-700">Grain Site Development</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                <AlertTriangle className="text-yellow-600 shrink-0 mt-1" size={20} />
+                                <span className="font-bold text-lg text-slate-900">Z Elevators & Bucket Elevators</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
+                                <span className="font-medium text-lg text-slate-700">Tube Conveyors</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
+                                <span className="font-medium text-lg text-slate-700">Silo Repairs</span>
+                                </li>
+                            </ul>
+                        </div>
+                        </div>
+
+                        {/* Column 3 */}
+                        <div className="bg-white rounded-xl shadow-sm border-2 border-slate-200 overflow-hidden hover:border-yellow-500 transition-colors duration-300">
+                        <div className="bg-slate-900 p-6 flex items-center gap-4">
+                            <div className="bg-yellow-500 p-2 rounded text-slate-900">
+                                <Shield size={28} />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold uppercase text-white">Structural & Earthmoving</h3>
+                                <p className="text-slate-400 text-xs uppercase tracking-wider">Heavy Metal Repair</p>
+                            </div>
+                        </div>
+                        <div className="p-8">
+                            <ul className="space-y-4">
+                                <li className="flex items-start gap-3">
+                                <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
+                                <span className="font-medium text-lg text-slate-700">Earthmoving Equipment Repair</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                <AlertTriangle className="text-yellow-600 shrink-0 mt-1" size={20} />
+                                <span className="font-bold text-lg text-slate-900">Excavator Bucket Hard-facing</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
+                                <span className="font-medium text-lg text-slate-700">Truck & Trailer Repairs</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
+                                <span className="font-medium text-lg text-slate-700">Structural Frame Straightening</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
+                                <span className="font-medium text-lg text-slate-700">Aluminum Welding</span>
+                                </li>
+                            </ul>
+                        </div>
+                        </div>
+
+                    </div>
+                    </div>
+                </section>
+
+                {/* URGENCY BANNER */}
+                <section className="bg-yellow-500 py-12 border-y-4 border-black">
+                    <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-6 uppercase tracking-tight">
+                        Machinery Down? Don't Wait.
+                    </h2>
+                    <div className="flex flex-col md:flex-row justify-center items-center gap-4">
+                        <a href={phoneHref} className="bg-black text-white hover:bg-slate-800 text-xl font-black py-4 px-12 rounded shadow-lg flex items-center gap-2 transition-transform hover:scale-105 w-full md:w-auto justify-center">
+                            <Phone size={24} className="text-yellow-500" />
+                            CALL {phoneDisplay}
+                        </a>
+                        <a href="https://maps.google.com/?q=4+Thompsons+Ave,+Moree+NSW+2400" target="_blank" rel="noreferrer" className="bg-white text-black hover:bg-slate-100 text-xl font-bold py-4 px-12 rounded shadow-lg flex items-center gap-2 w-full md:w-auto justify-center">
+                            <MapPin size={24} />
+                            GET DIRECTIONS
+                        </a>
+                    </div>
+                    </div>
+                </section>
+
+                {/* FOOTER */}
+                <footer id="location" className="bg-slate-900 text-slate-400 py-16 border-t border-slate-800 pb-32 md:pb-16">
+                    <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    
+                    {/* Map Placeholder */}
+                    <div className="w-full h-64 bg-slate-800 rounded-lg flex items-center justify-center border border-slate-700 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-slate-800"></div>
+                        <div className="relative z-10 text-center p-6">
+                        <MapPin size={48} className="mx-auto text-yellow-500 mb-2" />
+                        <p className="text-white font-bold text-lg">4 Thompsons Ave</p>
+                        <p className="text-white font-bold text-lg">Moree NSW 2400</p>
+                        <p className="mt-2 text-sm">Click "Get Directions" above for GPS</p>
+                        </div>
+                    </div>
+
+                    {/* Info */}
+                    <div>
+                        <h3 className="text-3xl font-black text-white uppercase mb-6">HWS Moree</h3>
+                        <div className="space-y-6">
+                        <div className="flex items-start gap-4">
+                            <MapPin className="text-yellow-500 shrink-0" />
+                            <div>
+                            <strong className="text-white block">Workshop Address:</strong>
+                            <span>{address}</span>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-4">
+                            <Phone className="text-yellow-500 shrink-0" />
+                            <div>
+                            <strong className="text-white block">Emergency Contact:</strong>
+                            <a href={phoneHref} className="text-xl font-bold text-yellow-500 hover:underline">{phoneDisplay}</a>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-4">
+                            <Clock className="text-yellow-500 shrink-0" />
+                            <div>
+                            <strong className="text-white block">Standard Hours:</strong>
+                            <span>Opens 7 AM Friday (Call for emergency availability)</span>
+                            </div>
+                        </div>
+                        </div>
+                        <div className="mt-8 pt-8 border-t border-slate-800 text-sm">
+                        © {new Date().getFullYear()} Heavy Welding Specialists. Serving Moree & Surrounds.
+                        </div>
+                    </div>
+                    </div>
+                </footer>
+
+                {/* MOBILE STICKY FOOTER */}
+                <div className="md:hidden fixed bottom-0 left-0 w-full z-50">
+                    <a href={phoneHref} className="block w-full bg-yellow-500 text-black text-center py-5 font-black text-xl shadow-[0_-5px_20px_rgba(0,0,0,0.3)] flex items-center justify-center gap-3">
+                    <Phone fill="black" size={24} />
+                    CLICK TO CALL NOW
+                    </a>
                 </div>
-              </div>
-              <div className="p-8">
-                <ul className="space-y-4">
-                    <li className="flex items-start gap-3">
-                    <AlertTriangle className="text-yellow-600 shrink-0 mt-1" size={20} />
-                    <span className="font-bold text-lg text-slate-900">Hydraulic Cylinder Resealing</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                    <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
-                    <span className="font-medium text-lg text-slate-700">PTO Shaft Balancing</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                    <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
-                    <span className="font-medium text-lg text-slate-700">U-Joint Replacement</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                    <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
-                    <span className="font-medium text-lg text-slate-700">Axle Repair</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                    <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
-                    <span className="font-medium text-lg text-slate-700">Hydraulic Hoses & Fittings</span>
-                    </li>
-                </ul>
-              </div>
-            </div>
 
-            {/* Column 2: Ag Infrastructure (Business Specific) */}
-            <div className="bg-white rounded-xl shadow-sm border-2 border-slate-200 overflow-hidden hover:border-yellow-500 transition-colors duration-300">
-              <div className="bg-slate-900 p-6 flex items-center gap-4">
-                <div className="bg-yellow-500 p-2 rounded text-slate-900">
-                    <Droplet size={28} />
                 </div>
-                 <div>
-                    <h3 className="text-xl font-bold uppercase text-white">Ag Infrastructure</h3>
-                    <p className="text-slate-400 text-xs uppercase tracking-wider">Site Development</p>
-                </div>
-              </div>
-              <div className="p-8">
-                <ul className="space-y-4">
-                    <li className="flex items-start gap-3">
-                    <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
-                    <span className="font-medium text-lg text-slate-700">Irrigation Development & Repairs</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                    <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
-                    <span className="font-medium text-lg text-slate-700">Grain Site Development</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                    <AlertTriangle className="text-yellow-600 shrink-0 mt-1" size={20} />
-                    <span className="font-bold text-lg text-slate-900">Z Elevators & Bucket Elevators</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                    <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
-                    <span className="font-medium text-lg text-slate-700">Tube Conveyors</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                    <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
-                    <span className="font-medium text-lg text-slate-700">Silo Repairs</span>
-                    </li>
-                </ul>
-              </div>
-            </div>
+            );
+        };
 
-            {/* Column 3: Heavy Structural (Core Welding) */}
-            <div className="bg-white rounded-xl shadow-sm border-2 border-slate-200 overflow-hidden hover:border-yellow-500 transition-colors duration-300">
-              <div className="bg-slate-900 p-6 flex items-center gap-4">
-                <div className="bg-yellow-500 p-2 rounded text-slate-900">
-                    <Shield size={28} />
-                </div>
-                <div>
-                    <h3 className="text-xl font-bold uppercase text-white">Structural & Earthmoving</h3>
-                    <p className="text-slate-400 text-xs uppercase tracking-wider">Heavy Metal Repair</p>
-                </div>
-              </div>
-              <div className="p-8">
-                <ul className="space-y-4">
-                    <li className="flex items-start gap-3">
-                    <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
-                    <span className="font-medium text-lg text-slate-700">Earthmoving Equipment Repair</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                    <AlertTriangle className="text-yellow-600 shrink-0 mt-1" size={20} />
-                    <span className="font-bold text-lg text-slate-900">Excavator Bucket Hard-facing</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                    <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
-                    <span className="font-medium text-lg text-slate-700">Truck & Trailer Repairs</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                    <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
-                    <span className="font-medium text-lg text-slate-700">Structural Frame Straightening</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                    <ChevronRight className="text-slate-400 shrink-0 mt-1" size={20} />
-                    <span className="font-medium text-lg text-slate-700">Aluminum Welding</span>
-                    </li>
-                </ul>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* URGENCY BANNER */}
-      <section className="bg-yellow-500 py-12 border-y-4 border-black">
-         <div className="container mx-auto px-4 text-center">
-           <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-6 uppercase tracking-tight">
-             Machinery Down? Don't Wait.
-           </h2>
-           <div className="flex flex-col md:flex-row justify-center items-center gap-4">
-              <a href={phoneHref} className="bg-black text-white hover:bg-slate-800 text-xl font-black py-4 px-12 rounded shadow-lg flex items-center gap-2 transition-transform hover:scale-105 w-full md:w-auto justify-center">
-                <Phone size={24} className="text-yellow-500" />
-                CALL {phoneDisplay}
-              </a>
-              <a href="https://maps.google.com/?q=4+Thompsons+Ave,+Moree+NSW+2400" target="_blank" rel="noreferrer" className="bg-white text-black hover:bg-slate-100 text-xl font-bold py-4 px-12 rounded shadow-lg flex items-center gap-2 w-full md:w-auto justify-center">
-                <MapPin size={24} />
-                GET DIRECTIONS
-              </a>
-           </div>
-         </div>
-      </section>
-
-      {/* LOCATION & FOOTER */}
-      <footer id="location" className="bg-slate-900 text-slate-400 py-16 border-t border-slate-800 pb-32 md:pb-16">
-        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          
-          {/* Map Area (Visual Placeholder) */}
-          <div className="w-full h-64 bg-slate-800 rounded-lg flex items-center justify-center border border-slate-700 relative overflow-hidden group">
-            {/* Use a static map image or placeholder */}
-            <div className="absolute inset-0 bg-slate-800"></div>
-            <div className="relative z-10 text-center p-6">
-              <MapPin size={48} className="mx-auto text-yellow-500 mb-2" />
-              <p className="text-white font-bold text-lg">4 Thompsons Ave</p>
-              <p className="text-white font-bold text-lg">Moree NSW 2400</p>
-              <p className="mt-2 text-sm">Click "Get Directions" above for GPS</p>
-            </div>
-          </div>
-
-          {/* Info */}
-          <div>
-            <h3 className="text-3xl font-black text-white uppercase mb-6">HWS Moree</h3>
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <MapPin className="text-yellow-500 shrink-0" />
-                <div>
-                  <strong className="text-white block">Workshop Address:</strong>
-                  <span>{address}</span>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <Phone className="text-yellow-500 shrink-0" />
-                <div>
-                  <strong className="text-white block">Emergency Contact:</strong>
-                  <a href={phoneHref} className="text-xl font-bold text-yellow-500 hover:underline">{phoneDisplay}</a>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <Clock className="text-yellow-500 shrink-0" />
-                <div>
-                  <strong className="text-white block">Standard Hours:</strong>
-                  <span>Opens 7 AM Friday (Call for emergency availability)</span>
-                </div>
-              </div>
-            </div>
-            <div className="mt-8 pt-8 border-t border-slate-800 text-sm">
-              © {new Date().getFullYear()} Heavy Welding Specialists. Serving Moree & Surrounds.
-            </div>
-          </div>
-        </div>
-      </footer>
-
-      {/* STICKY MOBILE FOOTER CTA */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full z-50">
-        <a href={phoneHref} className="block w-full bg-yellow-500 text-black text-center py-5 font-black text-xl shadow-[0_-5px_20px_rgba(0,0,0,0.3)] flex items-center justify-center gap-3">
-          <Phone fill="black" size={24} />
-          CLICK TO CALL NOW
-        </a>
-      </div>
-
-    </div>
-  );
-};
-
-export default App;
+        // Initialize the App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
